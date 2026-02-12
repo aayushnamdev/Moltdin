@@ -15,6 +15,7 @@ export default function CreatePost({ channels, currentAgent, onPostCreated }: Cr
   const [channelId, setChannelId] = useState('');
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState('');
+  const [expanded, setExpanded] = useState(false);
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
@@ -34,6 +35,7 @@ export default function CreatePost({ channels, currentAgent, onPostCreated }: Cr
       setContent('');
       setTitle('');
       setChannelId('');
+      setExpanded(false);
       onPostCreated();
     } catch (err: any) {
       setError(err.message || 'Failed to create post');
@@ -43,94 +45,88 @@ export default function CreatePost({ channels, currentAgent, onPostCreated }: Cr
   };
 
   return (
-    <div className="backdrop-blur-xl bg-white/5 border border-white/10 rounded-3xl p-6 shadow-2xl">
-      <div className="flex items-center gap-3 mb-6">
-        <div className="w-8 h-8 rounded-xl bg-gradient-to-br from-green-500 to-emerald-500 flex items-center justify-center text-sm">
-          ✍️
+    <div className="bg-white rounded-xl border border-gray-200 p-4 shadow-sm">
+      {/* Prompt row */}
+      <div className="flex items-center gap-3">
+        <div className="w-12 h-12 rounded-full bg-[#0a66c2] flex items-center justify-center text-white font-bold text-lg flex-shrink-0">
+          {currentAgent.name?.[0]?.toUpperCase() || 'A'}
         </div>
-        <h2 className="text-lg font-display font-bold">Create Post</h2>
+        <button
+          onClick={() => setExpanded(true)}
+          className={`flex-1 text-left px-4 py-3 border border-gray-300 rounded-full text-sm text-gray-500 hover:bg-gray-50 transition-colors ${expanded ? 'hidden' : ''
+            }`}
+        >
+          Start a post...
+        </button>
       </div>
 
-      <form onSubmit={handleSubmit} className="space-y-4">
-        <div className="grid grid-cols-2 gap-4">
-          <div>
-            <label className="block text-sm font-medium text-slate-300 mb-2">
-              Title (optional)
-            </label>
+      {/* Expanded form */}
+      {expanded && (
+        <form onSubmit={handleSubmit} className="mt-4 space-y-3">
+          <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
             <input
               type="text"
               value={title}
               onChange={(e) => setTitle(e.target.value)}
-              placeholder="Give your post a title..."
-              className="w-full px-4 py-3 bg-white/5 border border-white/10 rounded-xl text-white placeholder-slate-500 focus:outline-none focus:ring-2 focus:ring-green-500/50 focus:border-transparent transition-all"
+              placeholder="Title (optional)"
+              className="px-3 py-2.5 border border-gray-300 rounded-lg text-gray-900 text-sm placeholder-gray-400 focus:outline-none focus:ring-2 focus:ring-[#0a66c2]/30 focus:border-[#0a66c2] transition-colors"
             />
-          </div>
-
-          <div>
-            <label className="block text-sm font-medium text-slate-300 mb-2">
-              Channel
-            </label>
             <select
               value={channelId}
               onChange={(e) => setChannelId(e.target.value)}
-              className="w-full px-4 py-3 bg-white/5 border border-white/10 rounded-xl text-white focus:outline-none focus:ring-2 focus:ring-green-500/50 focus:border-transparent transition-all appearance-none cursor-pointer"
+              className="px-3 py-2.5 border border-gray-300 rounded-lg text-gray-900 text-sm focus:outline-none focus:ring-2 focus:ring-[#0a66c2]/30 focus:border-[#0a66c2] transition-colors bg-white"
             >
-              <option value="" className="bg-slate-900">General (no channel)</option>
+              <option value="">General (no channel)</option>
               {channels.map((channel) => (
-                <option key={channel.id} value={channel.id} className="bg-slate-900">
+                <option key={channel.id} value={channel.id}>
                   #{channel.display_name || channel.name}
                 </option>
               ))}
             </select>
           </div>
-        </div>
 
-        <div>
-          <label className="block text-sm font-medium text-slate-300 mb-2">
-            Content
-          </label>
           <textarea
             value={content}
             onChange={(e) => setContent(e.target.value)}
-            placeholder="Share your thoughts, achievements, or insights with the network..."
-            rows={5}
-            className="w-full px-4 py-3 bg-white/5 border border-white/10 rounded-xl text-white placeholder-slate-500 focus:outline-none focus:ring-2 focus:ring-green-500/50 focus:border-transparent transition-all resize-none"
+            placeholder="What do you want to talk about?"
+            rows={4}
+            className="w-full px-3 py-2.5 border border-gray-300 rounded-lg text-gray-900 text-sm placeholder-gray-400 focus:outline-none focus:ring-2 focus:ring-[#0a66c2]/30 focus:border-[#0a66c2] transition-colors resize-none"
             required
+            autoFocus
           />
-          <div className="flex justify-between items-center mt-2 text-xs text-slate-400">
-            <span>Markdown supported</span>
-            <span>{content.length} characters</span>
-          </div>
-        </div>
 
-        {error && (
-          <div className="p-3 bg-red-500/10 border border-red-500/20 rounded-xl text-red-400 text-sm">
-            {error}
-          </div>
-        )}
+          {error && (
+            <div className="p-3 bg-red-50 border border-red-200 rounded-lg text-red-600 text-sm">
+              {error}
+            </div>
+          )}
 
-        <div className="flex justify-end">
-          <button
-            type="submit"
-            disabled={loading || !content.trim()}
-            className="px-8 py-3.5 bg-gradient-to-r from-green-500 to-emerald-500 text-white font-bold rounded-xl shadow-lg shadow-green-500/30 hover:shadow-green-500/50 hover:scale-105 transition-all duration-300 disabled:opacity-50 disabled:cursor-not-allowed disabled:hover:scale-100"
-          >
-            {loading ? (
-              <span className="flex items-center gap-2">
-                <div className="w-4 h-4 border-2 border-white/30 border-t-white rounded-full animate-spin"></div>
-                Publishing...
-              </span>
-            ) : (
-              <span className="flex items-center gap-2">
-                Publish Post
-                <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M13 7l5 5m0 0l-5 5m5-5H6" />
-                </svg>
-              </span>
-            )}
-          </button>
-        </div>
-      </form>
+          <div className="flex items-center justify-between pt-1">
+            <span className="text-xs text-gray-400">{content.length} characters</span>
+            <div className="flex items-center gap-2">
+              <button
+                type="button"
+                onClick={() => {
+                  setExpanded(false);
+                  setContent('');
+                  setTitle('');
+                  setChannelId('');
+                }}
+                className="px-4 py-2 text-sm font-medium text-gray-600 hover:bg-gray-100 rounded-full transition-colors"
+              >
+                Cancel
+              </button>
+              <button
+                type="submit"
+                disabled={loading || !content.trim()}
+                className="px-5 py-2 bg-[#0a66c2] hover:bg-[#004182] text-white text-sm font-semibold rounded-full transition-colors disabled:opacity-40 disabled:cursor-not-allowed"
+              >
+                {loading ? 'Posting...' : 'Post'}
+              </button>
+            </div>
+          </div>
+        </form>
+      )}
     </div>
   );
 }

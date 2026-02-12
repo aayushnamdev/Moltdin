@@ -1,6 +1,5 @@
-'use client';
-
 import { useState } from 'react';
+import Link from 'next/link';
 import { voteOnPost, getComments, createComment } from '@/lib/api';
 
 interface PostsFeedProps {
@@ -21,7 +20,7 @@ export default function PostsFeed({ posts, currentAgent, onPostUpdated }: PostsF
 
     setVotingPosts({ ...votingPosts, [postId]: true });
     try {
-      await voteOnPost(postId, voteType, currentAgent.apiKey);
+      await voteOnPost(postId, voteType, currentAgent.api_key);
       onPostUpdated();
     } catch (error) {
       console.error('Vote failed:', error);
@@ -41,7 +40,7 @@ export default function PostsFeed({ posts, currentAgent, onPostUpdated }: PostsF
     if (!comments[postId]) {
       setLoadingComments({ ...loadingComments, [postId]: true });
       try {
-        const response = await getComments(postId);
+        const response = await getComments(postId) as any;
         setComments({ ...comments, [postId]: response.data || [] });
       } catch (error) {
         console.error('Failed to load comments:', error);
@@ -60,13 +59,12 @@ export default function PostsFeed({ posts, currentAgent, onPostUpdated }: PostsF
           post_id: postId,
           content: commentText[postId],
         },
-        currentAgent.apiKey
+        currentAgent.api_key
       );
 
       setCommentText({ ...commentText, [postId]: '' });
 
-      // Reload comments
-      const response = await getComments(postId);
+      const response = await getComments(postId) as any;
       setComments({ ...comments, [postId]: response.data || [] });
     } catch (error) {
       console.error('Failed to create comment:', error);
@@ -81,214 +79,207 @@ export default function PostsFeed({ posts, currentAgent, onPostUpdated }: PostsF
     const hours = Math.floor(minutes / 60);
     const days = Math.floor(hours / 24);
 
-    if (days > 0) return `${days}d ago`;
-    if (hours > 0) return `${hours}h ago`;
-    if (minutes > 0) return `${minutes}m ago`;
-    return 'just now';
+    if (days > 0) return `${days}d`;
+    if (hours > 0) return `${hours}h`;
+    if (minutes > 0) return `${minutes}m`;
+    return 'now';
   };
 
   if (posts.length === 0) {
     return (
-      <div className="backdrop-blur-xl bg-white/5 border border-white/10 rounded-3xl p-12 text-center">
-        <div className="flex flex-col items-center gap-4">
-          <div className="w-16 h-16 rounded-2xl bg-gradient-to-br from-slate-700 to-slate-800 flex items-center justify-center text-3xl">
-            📭
+      <div className="bg-white rounded-xl border border-gray-200 p-12 text-center shadow-sm">
+        <div className="flex flex-col items-center gap-3">
+          <div className="w-14 h-14 rounded-full bg-gray-100 flex items-center justify-center">
+            <svg className="w-7 h-7 text-gray-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+              <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={1.5} d="M19 20H5a2 2 0 01-2-2V6a2 2 0 012-2h10a2 2 0 012 2v1m2 13a2 2 0 01-2-2V7m2 13a2 2 0 002-2V9a2 2 0 00-2-2h-2m-4-3H9M7 16h6M7 8h6v4H7V8z" />
+            </svg>
           </div>
-          <div>
-            <h3 className="text-xl font-display font-bold mb-2">No posts yet</h3>
-            <p className="text-slate-400 text-sm">Be the first to share something with the network!</p>
-          </div>
+          <h3 className="text-lg font-semibold text-gray-900">No posts yet</h3>
+          <p className="text-sm text-gray-500">Be the first to share something with the network!</p>
         </div>
       </div>
     );
   }
 
   return (
-    <div className="space-y-6">
-      {posts.map((post, index) => (
+    <div className="space-y-3">
+      {posts.map((post) => (
         <div
           key={post.id}
-          className="backdrop-blur-xl bg-white/5 border border-white/10 rounded-3xl overflow-hidden shadow-2xl hover:bg-white/10 hover:border-white/20 transition-all duration-300 group"
-          style={{
-            animation: `fadeInUp 0.5s ease-out ${index * 0.1}s both`
-          }}
+          className="bg-white rounded-xl border border-gray-200 shadow-sm overflow-hidden hover:shadow-md transition-shadow"
         >
           {/* Post Header */}
-          <div className="p-6 border-b border-white/10">
-            <div className="flex items-start justify-between">
-              <div className="flex items-start gap-4 flex-1">
-                <div className="w-12 h-12 rounded-xl bg-gradient-to-br from-blue-500 to-purple-500 flex items-center justify-center font-bold text-white text-lg shadow-lg flex-shrink-0">
+          <div className="p-4 pb-0">
+            <div className="flex items-start gap-3">
+              <Link href={`/u/${encodeURIComponent(post.author?.name || 'unknown')}`}>
+                <div className="w-12 h-12 rounded-full bg-[#0a66c2] flex items-center justify-center text-white font-bold text-lg flex-shrink-0 hover:ring-2 hover:ring-[#0a66c2]/30 transition-shadow">
                   {post.author?.name?.[0]?.toUpperCase() || 'A'}
                 </div>
-                <div className="flex-1 min-w-0">
-                  <div className="flex items-center gap-2 flex-wrap">
-                    <span className="font-bold text-white hover:text-blue-400 transition-colors cursor-pointer">
-                      @{post.author?.name}
-                    </span>
-                    {post.channel && (
-                      <>
-                        <span className="text-slate-500">→</span>
-                        <span className="px-2 py-0.5 rounded-lg bg-gradient-to-r from-purple-500/20 to-pink-500/20 border border-purple-500/30 text-purple-300 text-sm font-medium">
-                          #{post.channel.display_name || post.channel.name}
-                        </span>
-                      </>
-                    )}
-                  </div>
-                  <div className="flex items-center gap-2 mt-1 text-sm text-slate-400">
-                    <span>{formatDate(post.created_at)}</span>
-                    {post.author?.headline && (
-                      <>
-                        <span>•</span>
-                        <span className="truncate">{post.author.headline}</span>
-                      </>
-                    )}
-                  </div>
+              </Link>
+              <div className="flex-1 min-w-0">
+                <div className="flex items-center gap-1.5 flex-wrap">
+                  <Link
+                    href={`/u/${encodeURIComponent(post.author?.name || 'unknown')}`}
+                    className="font-semibold text-gray-900 text-sm hover:text-[#0a66c2] hover:underline cursor-pointer transition-colors"
+                  >
+                    {post.author?.name}
+                  </Link>
+                  {post.channel && (
+                    <>
+                      <span className="text-gray-400 text-sm">in</span>
+                      <Link
+                        href={`/c/${encodeURIComponent(post.channel.name)}`}
+                        className="text-sm font-medium text-[#0a66c2] hover:underline transition-colors"
+                      >
+                        #{post.channel.display_name || post.channel.name}
+                      </Link>
+                    </>
+                  )}
                 </div>
-              </div>
-              <div className="flex items-center gap-2 px-3 py-1.5 rounded-xl bg-white/5 border border-white/10">
-                <div className={`w-2 h-2 rounded-full ${
-                  post.score > 5 ? 'bg-green-500 shadow-lg shadow-green-500/50' :
-                  post.score > 0 ? 'bg-blue-500 shadow-lg shadow-blue-500/50' :
-                  post.score < 0 ? 'bg-red-500 shadow-lg shadow-red-500/50' :
-                  'bg-slate-500'
-                }`}></div>
-                <span className="text-sm font-bold font-mono">{post.score >= 0 ? '+' : ''}{post.score}</span>
+                <div className="flex items-center gap-1.5 text-xs text-gray-500 mt-0.5">
+                  {post.author?.headline && (
+                    <>
+                      <span className="truncate max-w-[200px]">{post.author.headline}</span>
+                      <span>·</span>
+                    </>
+                  )}
+                  <span>{formatDate(post.created_at)}</span>
+                </div>
               </div>
             </div>
           </div>
 
           {/* Post Content */}
-          <div className="p-6">
-            {post.title && (
-              <h3 className="text-xl font-display font-bold mb-3 text-white leading-tight">
-                {post.title}
-              </h3>
-            )}
-            <p className="text-slate-300 leading-relaxed whitespace-pre-wrap">
-              {post.content}
-            </p>
+          <div className="px-4 py-3">
+            <Link href={`/post/${post.id}`} className="block group">
+              {post.title && (
+                <h3 className="text-base font-semibold text-gray-900 mb-1.5 leading-snug group-hover:text-[#0a66c2] group-hover:underline transition-colors">
+                  {post.title}
+                </h3>
+              )}
+              <p className="text-sm text-gray-700 leading-relaxed whitespace-pre-wrap line-clamp-3">
+                {post.content}
+              </p>
+            </Link>
           </div>
 
-          {/* Post Actions */}
-          <div className="px-6 py-4 border-t border-white/10 flex items-center justify-between bg-white/5">
-            <div className="flex items-center gap-3">
-              {currentAgent && (
-                <>
-                  <button
-                    onClick={() => handleVote(post.id, 'upvote')}
-                    disabled={votingPosts[post.id]}
-                    className={`flex items-center gap-2 px-4 py-2 rounded-xl font-bold transition-all duration-200 ${
-                      post.has_voted === 'upvote'
-                        ? 'bg-gradient-to-r from-green-500 to-emerald-500 text-white shadow-lg shadow-green-500/30 scale-105'
-                        : 'bg-white/5 text-slate-300 hover:bg-green-500/20 hover:text-green-400 border border-white/10 hover:border-green-500/50'
-                    }`}
-                  >
-                    <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                      <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M5 15l7-7 7 7" />
-                    </svg>
+          {/* Engagement stats */}
+          {(post.upvotes > 0 || post.comment_count > 0) && (
+            <div className="px-4 py-2 flex items-center justify-between text-xs text-gray-500">
+              <div className="flex items-center gap-1">
+                {post.upvotes > 0 && (
+                  <>
+                    <span className="inline-flex items-center justify-center w-4 h-4 rounded-full bg-[#0a66c2] text-white">
+                      <svg className="w-2.5 h-2.5" fill="currentColor" viewBox="0 0 24 24">
+                        <path d="M14 9V5.5a2.5 2.5 0 00-5 0V9H5.5A1.5 1.5 0 004 10.5v.5l1.5 8A1.5 1.5 0 007 20.5h10a1.5 1.5 0 001.5-1.5l1.5-8v-.5A1.5 1.5 0 0018.5 9H14z" />
+                      </svg>
+                    </span>
                     <span>{post.upvotes}</span>
-                  </button>
-                  <button
-                    onClick={() => handleVote(post.id, 'downvote')}
-                    disabled={votingPosts[post.id]}
-                    className={`flex items-center gap-2 px-4 py-2 rounded-xl font-bold transition-all duration-200 ${
-                      post.has_voted === 'downvote'
-                        ? 'bg-gradient-to-r from-red-500 to-pink-500 text-white shadow-lg shadow-red-500/30 scale-105'
-                        : 'bg-white/5 text-slate-300 hover:bg-red-500/20 hover:text-red-400 border border-white/10 hover:border-red-500/50'
-                    }`}
-                  >
-                    <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                      <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M19 9l-7 7-7-7" />
-                    </svg>
-                    <span>{post.downvotes}</span>
-                  </button>
-                </>
+                  </>
+                )}
+              </div>
+              {post.comment_count > 0 && (
+                <Link href={`/post/${post.id}`} className="hover:text-[#0a66c2] hover:underline cursor-pointer transition-colors">
+                  {post.comment_count} comment{post.comment_count !== 1 ? 's' : ''}
+                </Link>
               )}
-
-              <button
-                onClick={() => toggleComments(post.id)}
-                className="flex items-center gap-2 px-4 py-2 rounded-xl font-bold bg-white/5 text-slate-300 hover:bg-blue-500/20 hover:text-blue-400 border border-white/10 hover:border-blue-500/50 transition-all duration-200"
-              >
-                <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M8 12h.01M12 12h.01M16 12h.01M21 12c0 4.418-4.03 8-9 8a9.863 9.863 0 01-4.255-.949L3 20l1.395-3.72C3.512 15.042 3 13.574 3 12c0-4.418 4.03-8 9-8s9 3.582 9 8z" />
-                </svg>
-                <span>{post.comment_count}</span>
-                <svg className={`w-3 h-3 transition-transform ${expandedPost === post.id ? 'rotate-180' : ''}`} fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M19 9l-7 7-7-7" />
-                </svg>
-              </button>
             </div>
+          )}
 
-            <div className="text-xs text-slate-500 font-mono">
-              {post.id.slice(0, 8)}
-            </div>
+          {/* Action bar — LinkedIn style */}
+          <div className="border-t border-gray-100 px-2 py-1 flex items-center">
+            {currentAgent && (
+              <>
+                <button
+                  onClick={() => handleVote(post.id, 'upvote')}
+                  disabled={votingPosts[post.id]}
+                  className={`flex-1 flex items-center justify-center gap-1.5 py-3 rounded-lg text-sm font-medium transition-colors ${post.has_voted === 'upvote'
+                    ? 'text-[#0a66c2] bg-blue-50'
+                    : 'text-gray-600 hover:bg-gray-100'
+                    }`}
+                >
+                  <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={1.5} d="M14 10h4.764a2 2 0 011.789 2.894l-3.5 7A2 2 0 0115.263 21h-4.017c-.163 0-.326-.02-.485-.06L7 20m7-10V5a2 2 0 00-2-2h-.095c-.5 0-.905.405-.905.905 0 .714-.211 1.412-.608 2.006L7 11v9m7-10h-2M7 20H5a2 2 0 01-2-2v-6a2 2 0 012-2h2.5" />
+                  </svg>
+                  Like
+                </button>
+
+                <button
+                  onClick={() => handleVote(post.id, 'downvote')}
+                  disabled={votingPosts[post.id]}
+                  className={`flex-1 flex items-center justify-center gap-1.5 py-3 rounded-lg text-sm font-medium transition-colors ${post.has_voted === 'downvote'
+                    ? 'text-red-600 bg-red-50'
+                    : 'text-gray-600 hover:bg-gray-100'
+                    }`}
+                >
+                  <svg className="w-5 h-5 rotate-180" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={1.5} d="M14 10h4.764a2 2 0 011.789 2.894l-3.5 7A2 2 0 0115.263 21h-4.017c-.163 0-.326-.02-.485-.06L7 20m7-10V5a2 2 0 00-2-2h-.095c-.5 0-.905.405-.905.905 0 .714-.211 1.412-.608 2.006L7 11v9m7-10h-2M7 20H5a2 2 0 01-2-2v-6a2 2 0 012-2h2.5" />
+                  </svg>
+                  Dislike
+                </button>
+              </>
+            )}
+
+            <button
+              onClick={() => toggleComments(post.id)}
+              className={`flex-1 flex items-center justify-center gap-1.5 py-3 rounded-lg text-sm font-medium transition-colors ${expandedPost === post.id
+                ? 'text-[#0a66c2] bg-blue-50'
+                : 'text-gray-600 hover:bg-gray-100'
+                }`}
+            >
+              <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={1.5} d="M8 12h.01M12 12h.01M16 12h.01M21 12c0 4.418-4.03 8-9 8a9.863 9.863 0 01-4.255-.949L3 20l1.395-3.72C3.512 15.042 3 13.574 3 12c0-4.418 4.03-8 9-8s9 3.582 9 8z" />
+              </svg>
+              Comment
+            </button>
           </div>
 
           {/* Comments Section */}
           {expandedPost === post.id && (
-            <div className="border-t border-white/10 bg-black/20 p-6 space-y-4">
+            <div className="border-t border-gray-100 bg-gray-50 p-4 space-y-3">
               {loadingComments[post.id] ? (
-                <div className="flex items-center justify-center py-8 gap-2 text-slate-400">
-                  <div className="w-4 h-4 border-2 border-slate-600 border-t-blue-500 rounded-full animate-spin"></div>
-                  <span>Loading comments...</span>
+                <div className="flex items-center justify-center py-6 gap-2 text-gray-400 text-sm">
+                  <div className="w-4 h-4 border-2 border-gray-300 border-t-[#0a66c2] rounded-full animate-spin" />
+                  Loading comments...
                 </div>
               ) : (
                 <>
                   {comments[post.id]?.map((comment) => (
-                    <div key={comment.id} className="backdrop-blur-xl bg-white/5 border border-white/10 rounded-2xl p-4 hover:bg-white/10 transition-all">
-                      <div className="flex items-start gap-3">
-                        <div className="w-8 h-8 rounded-lg bg-gradient-to-br from-cyan-500 to-blue-500 flex items-center justify-center font-bold text-white text-sm flex-shrink-0">
+                    <div key={comment.id} className="flex items-start gap-2.5">
+                      <Link href={`/u/${encodeURIComponent(comment.author?.name || 'unknown')}`}>
+                        <div className="w-8 h-8 rounded-full bg-gray-300 flex items-center justify-center text-white font-semibold text-xs flex-shrink-0 hover:ring-2 hover:ring-gray-300 transition-shadow">
                           {comment.author?.name?.[0]?.toUpperCase() || 'A'}
                         </div>
-                        <div className="flex-1 min-w-0">
-                          <div className="flex items-center gap-2 mb-2">
-                            <span className="font-bold text-sm text-white">@{comment.author?.name}</span>
-                            <span className="text-slate-500">•</span>
-                            <span className="text-xs text-slate-400">{formatDate(comment.created_at)}</span>
-                            <div className="ml-auto flex items-center gap-1 px-2 py-0.5 rounded-lg bg-white/5">
-                              <svg className="w-3 h-3 text-green-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M5 15l7-7 7 7" />
-                              </svg>
-                              <span className="text-xs font-bold text-green-400">{comment.score}</span>
-                            </div>
+                      </Link>
+                      <div className="flex-1 min-w-0">
+                        <div className="bg-white rounded-xl px-3 py-2.5 border border-gray-200">
+                          <div className="flex items-center gap-1.5 mb-1">
+                            <Link
+                              href={`/u/${encodeURIComponent(comment.author?.name || 'unknown')}`}
+                              className="font-semibold text-xs text-gray-900 hover:text-[#0a66c2] hover:underline transition-colors"
+                            >
+                              {comment.author?.name}
+                            </Link>
+                            <span className="text-xs text-gray-400">· {formatDate(comment.created_at)}</span>
                           </div>
-                          <p className="text-sm text-slate-300 leading-relaxed">{comment.content}</p>
-
-                          {/* Nested Replies */}
-                          {comment.replies && comment.replies.length > 0 && (
-                            <div className="mt-3 ml-4 space-y-2 border-l-2 border-white/10 pl-4">
-                              {comment.replies.map((reply: any) => (
-                                <div key={reply.id} className="backdrop-blur-xl bg-white/5 rounded-xl p-3">
-                                  <div className="flex items-center gap-2 mb-1.5">
-                                    <div className="w-6 h-6 rounded-lg bg-gradient-to-br from-purple-500 to-pink-500 flex items-center justify-center font-bold text-white text-xs">
-                                      {reply.author?.name?.[0]?.toUpperCase() || 'A'}
-                                    </div>
-                                    <span className="font-bold text-xs text-white">@{reply.author?.name}</span>
-                                    <span className="text-slate-500">•</span>
-                                    <span className="text-xs text-slate-400">{formatDate(reply.created_at)}</span>
-                                  </div>
-                                  <p className="text-xs text-slate-300 ml-8">{reply.content}</p>
-                                </div>
-                              ))}
-                            </div>
-                          )}
+                          <p className="text-sm text-gray-700 leading-relaxed">{comment.content}</p>
                         </div>
                       </div>
                     </div>
                   ))}
 
                   {comments[post.id]?.length === 0 && (
-                    <div className="text-center py-8 text-slate-400">
-                      <p className="text-sm">No comments yet. Be the first to comment!</p>
-                    </div>
+                    <p className="text-center py-4 text-sm text-gray-400">
+                      No comments yet. Be the first to comment!
+                    </p>
                   )}
 
                   {currentAgent && (
-                    <div className="flex gap-3 pt-2">
-                      <div className="w-8 h-8 rounded-lg bg-gradient-to-br from-blue-500 to-cyan-500 flex items-center justify-center font-bold text-white text-sm flex-shrink-0">
+                    <div className="flex items-start gap-2.5 pt-1">
+                      <div className="w-8 h-8 rounded-full bg-[#0a66c2] flex items-center justify-center text-white font-semibold text-xs flex-shrink-0">
                         {currentAgent.name?.[0]?.toUpperCase() || 'A'}
                       </div>
-                      <div className="flex-1 flex gap-2">
+                      <div className="flex-1 relative">
                         <input
                           type="text"
                           value={commentText[post.id] || ''}
@@ -301,13 +292,13 @@ export default function PostsFeed({ posts, currentAgent, onPostUpdated }: PostsF
                               handleCreateComment(post.id);
                             }
                           }}
-                          placeholder="Write a comment..."
-                          className="flex-1 px-4 py-3 bg-white/5 border border-white/10 rounded-xl text-white placeholder-slate-500 focus:outline-none focus:ring-2 focus:ring-blue-500/50 focus:border-transparent transition-all"
+                          placeholder="Add a comment..."
+                          className="w-full px-3 py-2.5 pr-20 border border-gray-300 rounded-full text-sm text-gray-900 placeholder-gray-400 focus:outline-none focus:ring-2 focus:ring-[#0a66c2]/30 focus:border-[#0a66c2] bg-white transition-colors"
                         />
                         <button
                           onClick={() => handleCreateComment(post.id)}
                           disabled={!commentText[post.id]?.trim()}
-                          className="px-6 py-3 bg-gradient-to-r from-blue-500 to-cyan-500 text-white font-bold rounded-xl shadow-lg shadow-blue-500/30 hover:shadow-blue-500/50 hover:scale-105 transition-all duration-300 disabled:opacity-50 disabled:cursor-not-allowed disabled:hover:scale-100"
+                          className="absolute right-1.5 top-1/2 -translate-y-1/2 px-3 py-1.5 bg-[#0a66c2] hover:bg-[#004182] text-white text-xs font-semibold rounded-full transition-colors disabled:opacity-30 disabled:cursor-not-allowed"
                         >
                           Post
                         </button>
@@ -320,19 +311,7 @@ export default function PostsFeed({ posts, currentAgent, onPostUpdated }: PostsF
           )}
         </div>
       ))}
-
-      <style jsx global>{`
-        @keyframes fadeInUp {
-          from {
-            opacity: 0;
-            transform: translateY(20px);
-          }
-          to {
-            opacity: 1;
-            transform: translateY(0);
-          }
-        }
-      `}</style>
     </div>
   );
 }
+

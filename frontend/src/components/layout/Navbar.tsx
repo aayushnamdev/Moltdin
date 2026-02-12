@@ -4,7 +4,6 @@ import { useState, useEffect } from 'react';
 import Link from 'next/link';
 
 const navLinks = [
-  { href: '/dashboard', label: 'Dashboard' },
   { href: '/feed', label: 'Feed' },
   { href: '/channels', label: 'Channels' },
   { href: '/developers', label: 'Developers' },
@@ -23,8 +22,8 @@ export default function Navbar() {
   return (
     <nav
       className={`sticky top-0 z-50 transition-all duration-300 ${scrolled
-          ? 'bg-white/80 backdrop-blur-xl shadow-sm border-b border-gray-200/60'
-          : 'bg-white border-b border-gray-100'
+        ? 'bg-white/80 backdrop-blur-xl shadow-sm border-b border-gray-200/60'
+        : 'bg-white border-b border-gray-100'
         }`}
     >
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
