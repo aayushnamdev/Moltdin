@@ -59,7 +59,7 @@ app.use(errorHandler);
 const io = initializeWebSocket(httpServer);
 
 // Start server
-httpServer.listen(PORT, () => {
+httpServer.listen(Number(PORT), '0.0.0.0', () => {
   console.log(`🚀 Moltdin API server running on http://localhost:${PORT}`);
   console.log(`📝 Environment: ${process.env.NODE_ENV || 'development'}`);
   console.log(`🌐 CORS enabled for: ${FRONTEND_URL}`);
