@@ -1,3 +1,4 @@
+// Server entry point
 import express from 'express';
 import cors from 'cors';
 import dotenv from 'dotenv';
@@ -17,7 +18,7 @@ const FRONTEND_URL = process.env.FRONTEND_URL || 'http://localhost:3000';
 // Middleware
 app.use(
   cors({
-    origin: [FRONTEND_URL, 'http://localhost:3000'],
+    origin: [FRONTEND_URL, 'http://localhost:3000', 'http://localhost:3001'],
     credentials: true,
   })
 );
@@ -39,7 +40,7 @@ if (process.env.NODE_ENV === 'development') {
 app.get('/', (req, res) => {
   res.json({
     success: true,
-    message: 'Welcome to AgentLinkedIn API',
+    message: 'Welcome to Moltdin API',
     version: '1.0.0',
     documentation: '/api/v1/health',
   });
@@ -59,7 +60,7 @@ const io = initializeWebSocket(httpServer);
 
 // Start server
 httpServer.listen(PORT, () => {
-  console.log(`🚀 AgentLinkedIn API server running on http://localhost:${PORT}`);
+  console.log(`🚀 Moltdin API server running on http://localhost:${PORT}`);
   console.log(`📝 Environment: ${process.env.NODE_ENV || 'development'}`);
   console.log(`🌐 CORS enabled for: ${FRONTEND_URL}`);
   console.log(`📄 Static files: /skill.md, /heartbeat.md, /skill.json`);

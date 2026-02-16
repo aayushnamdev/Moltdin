@@ -9,7 +9,7 @@ import { CreateNotificationParams, NotificationWithActor } from '../types/notifi
  */
 export async function getNotifications(req: Request, res: Response) {
   try {
-    const agentId = req.agent?.id;
+    const agentId = (req as any).agent?.id;
     if (!agentId) {
       return res.status(401).json({ success: false, error: 'Unauthorized' });
     }
@@ -66,7 +66,7 @@ export async function getNotifications(req: Request, res: Response) {
  */
 export async function getUnreadCount(req: Request, res: Response) {
   try {
-    const agentId = req.agent?.id;
+    const agentId = (req as any).agent?.id;
     if (!agentId) {
       return res.status(401).json({ success: false, error: 'Unauthorized' });
     }
@@ -98,7 +98,7 @@ export async function getUnreadCount(req: Request, res: Response) {
  */
 export async function markAsRead(req: Request, res: Response) {
   try {
-    const agentId = req.agent?.id;
+    const agentId = (req as any).agent?.id;
     const { id } = req.params;
 
     if (!agentId) {
@@ -134,7 +134,7 @@ export async function markAsRead(req: Request, res: Response) {
  */
 export async function markAllAsRead(req: Request, res: Response) {
   try {
-    const agentId = req.agent?.id;
+    const agentId = (req as any).agent?.id;
     if (!agentId) {
       return res.status(401).json({ success: false, error: 'Unauthorized' });
     }
@@ -167,7 +167,7 @@ export async function markAllAsRead(req: Request, res: Response) {
  */
 export async function deleteNotification(req: Request, res: Response) {
   try {
-    const agentId = req.agent?.id;
+    const agentId = (req as any).agent?.id;
     const { id } = req.params;
 
     if (!agentId) {

@@ -10,7 +10,7 @@ import { ApiResponse } from '../types/api';
  */
 export async function getChannels(req: AuthRequest, res: Response) {
   try {
-    const agentId = req.agentId;
+    const agentId = (req as any).agentId;
 
     // Fetch all channels
     const { data: channels, error } = await supabase
@@ -80,7 +80,7 @@ export async function getChannels(req: AuthRequest, res: Response) {
 export async function getChannelById(req: AuthRequest, res: Response) {
   try {
     const { id } = req.params;
-    const agentId = req.agentId;
+    const agentId = (req as any).agentId;
 
     // Try to find by ID first, then by name
     let query = supabase.from('channels').select('*');
@@ -141,7 +141,7 @@ export async function getChannelById(req: AuthRequest, res: Response) {
  */
 export async function joinChannel(req: AuthRequest, res: Response) {
   try {
-    if (!req.agentId) {
+    if (!(req as any).agentId) {
       return res.status(401).json({
         success: false,
         error: 'Unauthorized',
@@ -169,7 +169,7 @@ export async function joinChannel(req: AuthRequest, res: Response) {
     const { error: insertError } = await supabase
       .from('channel_memberships')
       .insert({
-        agent_id: req.agentId,
+        agent_id: (req as any).agentId,
         channel_id: id,
       });
 
@@ -220,7 +220,7 @@ export async function joinChannel(req: AuthRequest, res: Response) {
  */
 export async function leaveChannel(req: AuthRequest, res: Response) {
   try {
-    if (!req.agentId) {
+    if (!(req as any).agentId) {
       return res.status(401).json({
         success: false,
         error: 'Unauthorized',
@@ -248,7 +248,7 @@ export async function leaveChannel(req: AuthRequest, res: Response) {
     const { data: membership } = await supabase
       .from('channel_memberships')
       .select('*')
-      .eq('agent_id', req.agentId)
+      .eq('agent_id', (req as any).agentId)
       .eq('channel_id', id)
       .single();
 
@@ -264,7 +264,7 @@ export async function leaveChannel(req: AuthRequest, res: Response) {
     const { error: deleteError } = await supabase
       .from('channel_memberships')
       .delete()
-      .eq('agent_id', req.agentId)
+      .eq('agent_id', (req as any).agentId)
       .eq('channel_id', id);
 
     if (deleteError) {

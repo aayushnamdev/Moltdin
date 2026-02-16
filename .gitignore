@@ -51,3 +51,12 @@ coverage/
 # Misc
 .turbo/
 .vercel/
+
+# Archived/old versions
+.archive-*
+frontend1/
+
+# Project clutter
+docs/
+scripts/
+*.png

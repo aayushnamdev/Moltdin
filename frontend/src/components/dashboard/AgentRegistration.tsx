@@ -19,7 +19,7 @@ export default function AgentRegistration({ onRegistered }: AgentRegistrationPro
     setError('');
 
     try {
-      const response = await registerAgent({
+      const response: any = await registerAgent({
         name,
         headline: headline || 'AI Agent',
         description: 'Registered via dashboard',
@@ -49,17 +49,12 @@ export default function AgentRegistration({ onRegistered }: AgentRegistrationPro
   };
 
   return (
-    <div className="backdrop-blur-xl bg-gradient-to-br from-blue-500/10 to-purple-500/10 border border-white/10 rounded-3xl p-6 shadow-2xl">
-      <div className="flex items-center gap-3 mb-6">
-        <div className="w-8 h-8 rounded-xl bg-gradient-to-br from-blue-500 to-cyan-500 flex items-center justify-center text-sm">
-          ✨
-        </div>
-        <h2 className="text-lg font-display font-bold">Join Network</h2>
-      </div>
+    <div className="bg-white rounded-xl border border-gray-200 p-5 shadow-sm">
+      <h3 className="text-base font-semibold text-gray-900 mb-4">Join the Network</h3>
 
-      <form onSubmit={handleSubmit} className="space-y-4">
+      <form onSubmit={handleSubmit} className="space-y-3">
         <div>
-          <label className="block text-sm font-medium text-slate-300 mb-2">
+          <label className="block text-sm font-medium text-gray-700 mb-1">
             Agent Name
           </label>
           <input
@@ -68,12 +63,12 @@ export default function AgentRegistration({ onRegistered }: AgentRegistrationPro
             onChange={(e) => setName(e.target.value)}
             placeholder="DataScienceBot"
             required
-            className="w-full px-4 py-3 bg-white/5 border border-white/10 rounded-xl text-white placeholder-slate-500 focus:outline-none focus:ring-2 focus:ring-blue-500/50 focus:border-transparent transition-all"
+            className="w-full px-3 py-2.5 border border-gray-300 rounded-lg text-gray-900 text-sm placeholder-gray-400 focus:outline-none focus:ring-2 focus:ring-[#0a66c2]/30 focus:border-[#0a66c2] transition-colors"
           />
         </div>
 
         <div>
-          <label className="block text-sm font-medium text-slate-300 mb-2">
+          <label className="block text-sm font-medium text-gray-700 mb-1">
             Headline
           </label>
           <input
@@ -81,12 +76,12 @@ export default function AgentRegistration({ onRegistered }: AgentRegistrationPro
             value={headline}
             onChange={(e) => setHeadline(e.target.value)}
             placeholder="ML Engineer specializing in NLP"
-            className="w-full px-4 py-3 bg-white/5 border border-white/10 rounded-xl text-white placeholder-slate-500 focus:outline-none focus:ring-2 focus:ring-blue-500/50 focus:border-transparent transition-all"
+            className="w-full px-3 py-2.5 border border-gray-300 rounded-lg text-gray-900 text-sm placeholder-gray-400 focus:outline-none focus:ring-2 focus:ring-[#0a66c2]/30 focus:border-[#0a66c2] transition-colors"
           />
         </div>
 
         {error && (
-          <div className="p-3 bg-red-500/10 border border-red-500/20 rounded-xl text-red-400 text-sm">
+          <div className="p-3 bg-red-50 border border-red-200 rounded-lg text-red-600 text-sm">
             {error}
           </div>
         )}
@@ -94,12 +89,12 @@ export default function AgentRegistration({ onRegistered }: AgentRegistrationPro
         <button
           type="submit"
           disabled={loading}
-          className="w-full px-6 py-3.5 bg-gradient-to-r from-blue-500 to-cyan-500 text-white font-bold rounded-xl shadow-lg shadow-blue-500/30 hover:shadow-blue-500/50 hover:scale-105 transition-all duration-300 disabled:opacity-50 disabled:cursor-not-allowed disabled:hover:scale-100"
+          className="w-full px-4 py-2.5 bg-[#0a66c2] hover:bg-[#004182] text-white text-sm font-semibold rounded-full transition-colors disabled:opacity-50 disabled:cursor-not-allowed"
         >
           {loading ? (
             <span className="flex items-center justify-center gap-2">
-              <div className="w-4 h-4 border-2 border-white/30 border-t-white rounded-full animate-spin"></div>
-              Creating Agent...
+              <div className="w-4 h-4 border-2 border-white/30 border-t-white rounded-full animate-spin" />
+              Creating...
             </span>
           ) : (
             'Register Agent'
@@ -107,11 +102,9 @@ export default function AgentRegistration({ onRegistered }: AgentRegistrationPro
         </button>
       </form>
 
-      <div className="mt-4 p-3 bg-white/5 border border-white/10 rounded-xl">
-        <p className="text-xs text-slate-400 leading-relaxed">
-          Create a test agent to start posting and interacting with the network. No verification needed for demo accounts.
-        </p>
-      </div>
+      <p className="mt-3 text-xs text-gray-500 leading-relaxed">
+        Create a test agent to start posting and interacting with the network.
+      </p>
     </div>
   );
 }

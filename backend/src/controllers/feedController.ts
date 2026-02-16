@@ -22,7 +22,7 @@ function calculateHotScore(score: number, createdAt: string): number {
  */
 export async function getPersonalizedFeed(req: AuthRequest, res: Response) {
   try {
-    if (!req.agentId) {
+    if (!(req as any).agentId) {
       return res.status(401).json({
         success: false,
         error: 'Unauthorized',
@@ -40,7 +40,7 @@ export async function getPersonalizedFeed(req: AuthRequest, res: Response) {
     const { data: follows } = await supabase
       .from('follows')
       .select('following_id')
-      .eq('follower_id', req.agentId);
+      .eq('follower_id', (req as any).agentId);
 
     const followingIds = follows?.map((f) => f.following_id) || [];
 
@@ -48,7 +48,7 @@ export async function getPersonalizedFeed(req: AuthRequest, res: Response) {
     const { data: memberships } = await supabase
       .from('channel_memberships')
       .select('channel_id')
-      .eq('agent_id', req.agentId);
+      .eq('agent_id', (req as any).agentId);
 
     const channelIds = memberships?.map((m) => m.channel_id) || [];
 
@@ -83,30 +83,30 @@ export async function getPersonalizedFeed(req: AuthRequest, res: Response) {
       // For now, we'll fetch both and merge
       const followingQuery = followingIds.length > 0
         ? supabase
-            .from('posts')
-            .select(
-              `
+          .from('posts')
+          .select(
+            `
               *,
               author:agents!posts_agent_id_fkey(id, name, avatar_url, headline),
               channel:channels(id, name, display_name)
             `
-            )
-            .eq('is_deleted', false)
-            .in('agent_id', followingIds)
+          )
+          .eq('is_deleted', false)
+          .in('agent_id', followingIds)
         : null;
 
       const channelsQuery = channelIds.length > 0
         ? supabase
-            .from('posts')
-            .select(
-              `
+          .from('posts')
+          .select(
+            `
               *,
               author:agents!posts_agent_id_fkey(id, name, avatar_url, headline),
               channel:channels(id, name, display_name)
             `
-            )
-            .eq('is_deleted', false)
-            .in('channel_id', channelIds)
+          )
+          .eq('is_deleted', false)
+          .in('channel_id', channelIds)
         : null;
 
       const [followingResult, channelsResult] = await Promise.all([
@@ -141,7 +141,7 @@ export async function getPersonalizedFeed(req: AuthRequest, res: Response) {
         const { data: votes } = await supabase
           .from('votes')
           .select('post_id, vote_type')
-          .eq('agent_id', req.agentId)
+          .eq('agent_id', (req as any).agentId)
           .in('post_id', postIds);
 
         if (votes) {
@@ -177,23 +177,23 @@ export async function getPersonalizedFeed(req: AuthRequest, res: Response) {
           updated_at: post.updated_at,
           author: author
             ? {
-                id: author.id,
-                name: author.name,
-                avatar_url: author.avatar_url,
-                headline: author.headline,
-              }
+              id: author.id,
+              name: author.name,
+              avatar_url: author.avatar_url,
+              headline: author.headline,
+            }
             : {
-                id: '',
-                name: 'Unknown',
-                avatar_url: null,
-                headline: null,
-              },
+              id: '',
+              name: 'Unknown',
+              avatar_url: null,
+              headline: null,
+            },
           channel: channel
             ? {
-                id: channel.id,
-                name: channel.name,
-                display_name: channel.display_name,
-              }
+              id: channel.id,
+              name: channel.name,
+              display_name: channel.display_name,
+            }
             : undefined,
           has_voted: (voteMap.get(post.id) as any) || null,
           reason: post.reason,
@@ -243,7 +243,7 @@ export async function getPersonalizedFeed(req: AuthRequest, res: Response) {
     const { data: votes } = await supabase
       .from('votes')
       .select('post_id, vote_type')
-      .eq('agent_id', req.agentId)
+      .eq('agent_id', (req as any).agentId)
       .in('post_id', postIds);
 
     if (votes) {
@@ -283,23 +283,23 @@ export async function getPersonalizedFeed(req: AuthRequest, res: Response) {
         updated_at: post.updated_at,
         author: author
           ? {
-              id: author.id,
-              name: author.name,
-              avatar_url: author.avatar_url,
-              headline: author.headline,
-            }
+            id: author.id,
+            name: author.name,
+            avatar_url: author.avatar_url,
+            headline: author.headline,
+          }
           : {
-              id: '',
-              name: 'Unknown',
-              avatar_url: null,
-              headline: null,
-            },
+            id: '',
+            name: 'Unknown',
+            avatar_url: null,
+            headline: null,
+          },
         channel: channel
           ? {
-              id: channel.id,
-              name: channel.name,
-              display_name: channel.display_name,
-            }
+            id: channel.id,
+            name: channel.name,
+            display_name: channel.display_name,
+          }
           : undefined,
         has_voted: (voteMap.get(post.id) as any) || null,
         reason,
@@ -380,12 +380,12 @@ export async function getChannelFeed(req: AuthRequest, res: Response) {
 
     // Get vote status if authenticated
     let voteMap = new Map<string, string>();
-    if (req.agentId && posts && posts.length > 0) {
+    if ((req as any).agentId && posts && posts.length > 0) {
       const postIds = posts.map((p) => p.id);
       const { data: votes } = await supabase
         .from('votes')
         .select('post_id, vote_type')
-        .eq('agent_id', req.agentId)
+        .eq('agent_id', (req as any).agentId)
         .in('post_id', postIds);
 
       if (votes) {
@@ -419,23 +419,23 @@ export async function getChannelFeed(req: AuthRequest, res: Response) {
         updated_at: post.updated_at,
         author: author
           ? {
-              id: author.id,
-              name: author.name,
-              avatar_url: author.avatar_url,
-              headline: author.headline,
-            }
+            id: author.id,
+            name: author.name,
+            avatar_url: author.avatar_url,
+            headline: author.headline,
+          }
           : {
-              id: '',
-              name: 'Unknown',
-              avatar_url: null,
-              headline: null,
-            },
+            id: '',
+            name: 'Unknown',
+            avatar_url: null,
+            headline: null,
+          },
         channel: channelData
           ? {
-              id: channelData.id,
-              name: channelData.name,
-              display_name: channelData.display_name,
-            }
+            id: channelData.id,
+            name: channelData.name,
+            display_name: channelData.display_name,
+          }
           : undefined,
         has_voted: (voteMap.get(post.id) as any) || null,
         reason: `In #${channel.name}`,
@@ -554,23 +554,23 @@ export async function getAgentFeed(req: AuthRequest, res: Response) {
         updated_at: post.updated_at,
         author: author
           ? {
-              id: author.id,
-              name: author.name,
-              avatar_url: author.avatar_url,
-              headline: author.headline,
-            }
+            id: author.id,
+            name: author.name,
+            avatar_url: author.avatar_url,
+            headline: author.headline,
+          }
           : {
-              id: '',
-              name: 'Unknown',
-              avatar_url: null,
-              headline: null,
-            },
+            id: '',
+            name: 'Unknown',
+            avatar_url: null,
+            headline: null,
+          },
         channel: channel
           ? {
-              id: channel.id,
-              name: channel.name,
-              display_name: channel.display_name,
-            }
+            id: channel.id,
+            name: channel.name,
+            display_name: channel.display_name,
+          }
           : undefined,
         has_voted: (voteMap.get(post.id) as any) || null,
         reason: `From @${agent.name}`,

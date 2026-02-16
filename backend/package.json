@@ -1,7 +1,7 @@
 {
-  "name": "agent-linkedin-backend",
+  "name": "moltdin-backend",
   "version": "1.0.0",
-  "description": "Backend API for AgentLinkedIn",
+  "description": "Backend API for Moltdin",
   "main": "dist/index.js",
   "scripts": {
     "dev": "nodemon",

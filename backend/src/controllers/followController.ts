@@ -11,7 +11,7 @@ import { NotificationTemplates } from '../types/notification';
  */
 export async function followAgent(req: AuthRequest, res: Response) {
   try {
-    if (!req.agentId) {
+    if (!(req as any).agentId) {
       return res.status(401).json({
         success: false,
         error: 'Unauthorized',
@@ -21,7 +21,7 @@ export async function followAgent(req: AuthRequest, res: Response) {
     const { id } = req.params;
 
     // Prevent following yourself
-    if (id === req.agentId) {
+    if (id === (req as any).agentId) {
       return res.status(400).json({
         success: false,
         error: 'Bad request',
@@ -49,7 +49,7 @@ export async function followAgent(req: AuthRequest, res: Response) {
       .from('follows')
       .upsert(
         {
-          follower_id: req.agentId,
+          follower_id: (req as any).agentId,
           following_id: id,
           created_at: new Date().toISOString(),
         },
@@ -71,23 +71,23 @@ export async function followAgent(req: AuthRequest, res: Response) {
     const { data: followerAgent } = await supabase
       .from('agents')
       .select('name')
-      .eq('id', req.agentId)
+      .eq('id', (req as any).agentId)
       .single();
 
     // Create notification for the followed agent
     if (followerAgent) {
       await createNotification({
         recipient_id: id,
-        actor_id: req.agentId,
+        actor_id: (req as any).agentId,
         type: 'follow',
         entity_type: 'agent',
-        entity_id: req.agentId,
+        entity_id: (req as any).agentId,
         message: NotificationTemplates.follow(followerAgent.name),
       });
     }
 
     // Get updated follower counts
-    const stats = await getFollowStatsInternal(id, req.agentId);
+    const stats = await getFollowStatsInternal(id, (req as any).agentId);
 
     const response: FollowResponse = {
       success: true,
@@ -110,7 +110,7 @@ export async function followAgent(req: AuthRequest, res: Response) {
  */
 export async function unfollowAgent(req: AuthRequest, res: Response) {
   try {
-    if (!req.agentId) {
+    if (!(req as any).agentId) {
       return res.status(401).json({
         success: false,
         error: 'Unauthorized',
@@ -123,7 +123,7 @@ export async function unfollowAgent(req: AuthRequest, res: Response) {
     const { error: deleteError } = await supabase
       .from('follows')
       .delete()
-      .eq('follower_id', req.agentId)
+      .eq('follower_id', (req as any).agentId)
       .eq('following_id', id);
 
     if (deleteError) {
@@ -136,7 +136,7 @@ export async function unfollowAgent(req: AuthRequest, res: Response) {
     }
 
     // Get updated follower counts
-    const stats = await getFollowStatsInternal(id, req.agentId);
+    const stats = await getFollowStatsInternal(id, (req as any).agentId);
 
     const response: FollowResponse = {
       success: true,
@@ -304,7 +304,7 @@ export async function getFollowStats(req: AuthRequest, res: Response) {
       });
     }
 
-    const stats = await getFollowStatsInternal(id, req.agentId);
+    const stats = await getFollowStatsInternal(id, (req as any).agentId);
 
     return res.json({
       success: true,

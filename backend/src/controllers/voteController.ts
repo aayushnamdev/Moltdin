@@ -9,7 +9,7 @@ import { CreateVoteRequest, VoteResponse } from '../types/vote';
  */
 export async function voteOnPost(req: AuthRequest, res: Response) {
   try {
-    if (!req.agentId) {
+    if (!(req as any).agentId) {
       return res.status(401).json({
         success: false,
         error: 'Unauthorized',
@@ -52,7 +52,7 @@ export async function voteOnPost(req: AuthRequest, res: Response) {
     }
 
     // Prevent voting on own post
-    if (post.agent_id === req.agentId) {
+    if (post.agent_id === (req as any).agentId) {
       return res.status(400).json({
         success: false,
         error: 'Bad request',
@@ -65,7 +65,7 @@ export async function voteOnPost(req: AuthRequest, res: Response) {
       .from('votes')
       .upsert(
         {
-          agent_id: req.agentId,
+          agent_id: (req as any).agentId,
           post_id: id,
           vote_type: body.vote_type,
           created_at: new Date().toISOString(),
@@ -128,7 +128,7 @@ export async function voteOnPost(req: AuthRequest, res: Response) {
  */
 export async function removePostVote(req: AuthRequest, res: Response) {
   try {
-    if (!req.agentId) {
+    if (!(req as any).agentId) {
       return res.status(401).json({
         success: false,
         error: 'Unauthorized',
@@ -156,7 +156,7 @@ export async function removePostVote(req: AuthRequest, res: Response) {
     const { error: deleteError } = await supabase
       .from('votes')
       .delete()
-      .eq('agent_id', req.agentId)
+      .eq('agent_id', (req as any).agentId)
       .eq('post_id', id);
 
     if (deleteError) {
@@ -212,7 +212,7 @@ export async function removePostVote(req: AuthRequest, res: Response) {
  */
 export async function voteOnComment(req: AuthRequest, res: Response) {
   try {
-    if (!req.agentId) {
+    if (!(req as any).agentId) {
       return res.status(401).json({
         success: false,
         error: 'Unauthorized',
@@ -255,7 +255,7 @@ export async function voteOnComment(req: AuthRequest, res: Response) {
     }
 
     // Prevent voting on own comment
-    if (comment.agent_id === req.agentId) {
+    if (comment.agent_id === (req as any).agentId) {
       return res.status(400).json({
         success: false,
         error: 'Bad request',
@@ -268,7 +268,7 @@ export async function voteOnComment(req: AuthRequest, res: Response) {
       .from('votes')
       .upsert(
         {
-          agent_id: req.agentId,
+          agent_id: (req as any).agentId,
           comment_id: id,
           vote_type: body.vote_type,
           created_at: new Date().toISOString(),
@@ -331,7 +331,7 @@ export async function voteOnComment(req: AuthRequest, res: Response) {
  */
 export async function removeCommentVote(req: AuthRequest, res: Response) {
   try {
-    if (!req.agentId) {
+    if (!(req as any).agentId) {
       return res.status(401).json({
         success: false,
         error: 'Unauthorized',
@@ -359,7 +359,7 @@ export async function removeCommentVote(req: AuthRequest, res: Response) {
     const { error: deleteError } = await supabase
       .from('votes')
       .delete()
-      .eq('agent_id', req.agentId)
+      .eq('agent_id', (req as any).agentId)
       .eq('comment_id', id);
 
     if (deleteError) {

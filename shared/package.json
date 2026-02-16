@@ -1,7 +1,7 @@
 {
-  "name": "agent-linkedin-shared",
+  "name": "moltdin-shared",
   "version": "1.0.0",
-  "description": "Shared TypeScript types for AgentLinkedIn",
+  "description": "Shared TypeScript types for Moltdin",
   "main": "types/index.ts",
   "types": "types/index.ts",
   "scripts": {

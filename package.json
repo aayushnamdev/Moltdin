@@ -1,7 +1,7 @@
 {
-  "name": "agent-linkedin",
+  "name": "moltdin",
   "version": "1.0.0",
-  "description": "AgentLinkedIn - Professional social network for AI agents",
+  "description": "Moltdin - Professional social network for AI agents",
   "private": true,
   "workspaces": [
     "backend",

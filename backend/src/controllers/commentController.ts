@@ -17,7 +17,7 @@ import { NotificationTemplates } from '../types/notification';
  */
 export async function createComment(req: AuthRequest, res: Response) {
   try {
-    if (!req.agentId) {
+    if (!(req as any).agentId) {
       return res.status(401).json({
         success: false,
         error: 'Unauthorized',
@@ -110,7 +110,7 @@ export async function createComment(req: AuthRequest, res: Response) {
     // Create comment
     const commentData = {
       post_id: body.post_id,
-      agent_id: req.agentId,
+      agent_id: (req as any).agentId,
       parent_id: body.parent_id || null,
       content: body.content,
       upvotes: 0,
@@ -153,14 +153,14 @@ export async function createComment(req: AuthRequest, res: Response) {
     const { data: commenterAgent } = await supabase
       .from('agents')
       .select('name')
-      .eq('id', req.agentId)
+      .eq('id', (req as any).agentId)
       .single();
 
     // Create notification for post author (if it's a comment, not a reply)
     if (commenterAgent && postData && !body.parent_id) {
       await createNotification({
         recipient_id: postData.agent_id,
-        actor_id: req.agentId,
+        actor_id: (req as any).agentId,
         type: 'comment',
         entity_type: 'comment',
         entity_id: comment.id,
@@ -179,7 +179,7 @@ export async function createComment(req: AuthRequest, res: Response) {
       if (parentComment) {
         await createNotification({
           recipient_id: parentComment.agent_id,
-          actor_id: req.agentId,
+          actor_id: (req as any).agentId,
           type: 'reply',
           entity_type: 'comment',
           entity_id: comment.id,
@@ -220,7 +220,7 @@ export async function getComments(req: AuthRequest, res: Response) {
       });
     }
 
-    const agentId = req.agentId;
+    const agentId = (req as any).agentId;
 
     // Fetch all comments for the post
     const { data: comments, error } = await supabase
@@ -285,17 +285,17 @@ export async function getComments(req: AuthRequest, res: Response) {
         updated_at: comment.updated_at,
         author: author
           ? {
-              id: author.id,
-              name: author.name,
-              avatar_url: author.avatar_url,
-              headline: author.headline,
-            }
+            id: author.id,
+            name: author.name,
+            avatar_url: author.avatar_url,
+            headline: author.headline,
+          }
           : {
-              id: '',
-              name: 'Unknown',
-              avatar_url: null,
-              headline: null,
-            },
+            id: '',
+            name: 'Unknown',
+            avatar_url: null,
+            headline: null,
+          },
         has_voted: (voteMap.get(comment.id) as any) || null,
         replies: [],
       };
@@ -341,7 +341,7 @@ export async function getComments(req: AuthRequest, res: Response) {
 export async function getCommentById(req: AuthRequest, res: Response) {
   try {
     const { id } = req.params;
-    const agentId = req.agentId;
+    const agentId = (req as any).agentId;
 
     const { data: comment, error } = await supabase
       .from('comments')
@@ -401,17 +401,17 @@ export async function getCommentById(req: AuthRequest, res: Response) {
       updated_at: comment.updated_at,
       author: author
         ? {
-            id: author.id,
-            name: author.name,
-            avatar_url: author.avatar_url,
-            headline: author.headline,
-          }
+          id: author.id,
+          name: author.name,
+          avatar_url: author.avatar_url,
+          headline: author.headline,
+        }
         : {
-            id: '',
-            name: 'Unknown',
-            avatar_url: null,
-            headline: null,
-          },
+          id: '',
+          name: 'Unknown',
+          avatar_url: null,
+          headline: null,
+        },
       has_voted: hasVoted,
       replies: [],
     };
@@ -435,7 +435,7 @@ export async function getCommentById(req: AuthRequest, res: Response) {
  */
 export async function updateComment(req: AuthRequest, res: Response) {
   try {
-    if (!req.agentId) {
+    if (!(req as any).agentId) {
       return res.status(401).json({
         success: false,
         error: 'Unauthorized',
@@ -485,7 +485,7 @@ export async function updateComment(req: AuthRequest, res: Response) {
       });
     }
 
-    if (comment.agent_id !== req.agentId) {
+    if (comment.agent_id !== (req as any).agentId) {
       return res.status(403).json({
         success: false,
         error: 'Forbidden',
@@ -533,7 +533,7 @@ export async function updateComment(req: AuthRequest, res: Response) {
  */
 export async function deleteComment(req: AuthRequest, res: Response) {
   try {
-    if (!req.agentId) {
+    if (!(req as any).agentId) {
       return res.status(401).json({
         success: false,
         error: 'Unauthorized',
@@ -565,7 +565,7 @@ export async function deleteComment(req: AuthRequest, res: Response) {
       });
     }
 
-    if (comment.agent_id !== req.agentId) {
+    if (comment.agent_id !== (req as any).agentId) {
       return res.status(403).json({
         success: false,
         error: 'Forbidden',

@@ -137,7 +137,7 @@ export async function registerAgent(req: Request, res: Response) {
  */
 export async function getMyProfile(req: AuthRequest, res: Response) {
   try {
-    if (!req.agent) {
+    if (!(req as any).agent) {
       return res.status(401).json({
         success: false,
         error: 'Unauthorized',
@@ -145,7 +145,7 @@ export async function getMyProfile(req: AuthRequest, res: Response) {
     }
 
     // Don't return the API key in the response
-    const { api_key, ...agentData } = req.agent;
+    const { api_key, ...agentData } = (req as any).agent;
 
     return res.json({
       success: true,
@@ -166,7 +166,7 @@ export async function getMyProfile(req: AuthRequest, res: Response) {
  */
 export async function updateMyProfile(req: AuthRequest, res: Response) {
   try {
-    if (!req.agent || !req.agentId) {
+    if (!(req as any).agent || !(req as any).agentId) {
       return res.status(401).json({
         success: false,
         error: 'Unauthorized',
@@ -210,7 +210,7 @@ export async function updateMyProfile(req: AuthRequest, res: Response) {
     const { data: agent, error } = await supabase
       .from('agents')
       .update(updateData)
-      .eq('id', req.agentId)
+      .eq('id', (req as any).agentId)
       .select()
       .single();
 
@@ -246,7 +246,7 @@ export async function updateMyProfile(req: AuthRequest, res: Response) {
  */
 export async function getAgentStatus(req: AuthRequest, res: Response) {
   try {
-    if (!req.agent) {
+    if (!(req as any).agent) {
       return res.status(401).json({
         success: false,
         error: 'Unauthorized',
@@ -254,10 +254,10 @@ export async function getAgentStatus(req: AuthRequest, res: Response) {
     }
 
     const statusResponse: AgentStatusResponse = {
-      status: req.agent.status,
-      claimed_at: req.agent.claimed_at,
-      claim_url: req.agent.claim_url,
-      claim_code: req.agent.claim_code,
+      status: (req as any).agent.status,
+      claimed_at: (req as any).agent.claimed_at,
+      claim_url: (req as any).agent.claim_url,
+      claim_code: (req as any).agent.claim_code,
     };
 
     return res.json({
@@ -349,7 +349,7 @@ export async function getAgentProfile(req: Request, res: Response) {
  */
 export async function updateHeartbeat(req: AuthRequest, res: Response) {
   try {
-    if (!req.agent || !req.agentId) {
+    if (!(req as any).agent || !(req as any).agentId) {
       return res.status(401).json({
         success: false,
         error: 'Unauthorized',
@@ -359,7 +359,7 @@ export async function updateHeartbeat(req: AuthRequest, res: Response) {
     const { error } = await supabase
       .from('agents')
       .update({ last_heartbeat: new Date().toISOString() })
-      .eq('id', req.agentId);
+      .eq('id', (req as any).agentId);
 
     if (error) {
       console.error('Heartbeat update error:', error);

@@ -14,7 +14,7 @@ import {
  */
 export async function getConversations(req: Request, res: Response) {
   try {
-    const agentId = req.agent?.id;
+    const agentId = (req as any).agent?.id;
     if (!agentId) {
       return res.status(401).json({ success: false, error: 'Unauthorized' });
     }
@@ -100,7 +100,7 @@ export async function getConversations(req: Request, res: Response) {
  */
 export async function getMessages(req: Request, res: Response) {
   try {
-    const agentId = req.agent?.id;
+    const agentId = (req as any).agent?.id;
     const { agentId: otherAgentId } = req.params;
     const { limit = 50, offset = 0 } = req.query;
 
@@ -173,7 +173,7 @@ export async function getMessages(req: Request, res: Response) {
  */
 export async function sendMessage(req: Request, res: Response) {
   try {
-    const agentId = req.agent?.id;
+    const agentId = (req as any).agent?.id;
     const { agentId: recipientId } = req.params;
     const body: SendMessageRequest = req.body;
 
@@ -276,7 +276,7 @@ export async function sendMessage(req: Request, res: Response) {
  */
 export async function markConversationRead(req: Request, res: Response) {
   try {
-    const agentId = req.agent?.id;
+    const agentId = (req as any).agent?.id;
     const { agentId: otherAgentId } = req.params;
 
     if (!agentId) {
@@ -311,7 +311,7 @@ export async function markConversationRead(req: Request, res: Response) {
  */
 export async function deleteMessage(req: Request, res: Response) {
   try {
-    const agentId = req.agent?.id;
+    const agentId = (req as any).agent?.id;
     const { id } = req.params;
 
     if (!agentId) {

@@ -25,7 +25,7 @@ export interface ActivityFeedItem {
  */
 export async function getActivityFeed(req: Request, res: Response) {
   try {
-    const agentId = req.agent?.id;
+    const agentId = (req as any).agent?.id;
     if (!agentId) {
       return res.status(401).json({ success: false, error: 'Unauthorized' });
     }

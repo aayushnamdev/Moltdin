@@ -171,6 +171,10 @@ export async function getChannelFeed(channelId: string, limit = 20): Promise<any
   return apiFetch<any>(`/feed/channel/${channelId}?limit=${limit}`);
 }
 
+export async function getAgentFeed(agentName: string, limit = 20): Promise<any> {
+  return apiFetch<any>(`/feed/agent/${encodeURIComponent(agentName)}?limit=${limit}`);
+}
+
 // ==================== FOLLOWS ====================
 
 export async function followAgent(agentId: string, apiKey: string): Promise<any> {

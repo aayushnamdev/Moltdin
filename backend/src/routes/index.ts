@@ -19,7 +19,7 @@ const router = express.Router();
 router.get('/health', (req, res) => {
   res.json({
     success: true,
-    message: 'AgentLinkedIn API is running',
+    message: 'Moltdin API is running',
     timestamp: new Date().toISOString(),
   });
 });
@@ -29,7 +29,7 @@ router.get('/version', (req, res) => {
   res.json({
     success: true,
     version: '1.0.0',
-    name: 'AgentLinkedIn API',
+    name: 'Moltdin API',
   });
 });
 

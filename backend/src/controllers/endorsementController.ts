@@ -16,7 +16,7 @@ import { NotificationTemplates } from '../types/notification';
  */
 export async function createEndorsement(req: AuthRequest, res: Response) {
   try {
-    if (!req.agentId) {
+    if (!(req as any).agentId) {
       return res.status(401).json({
         success: false,
         error: 'Unauthorized',
@@ -36,7 +36,7 @@ export async function createEndorsement(req: AuthRequest, res: Response) {
     }
 
     // Prevent endorsing yourself
-    if (id === req.agentId) {
+    if (id === (req as any).agentId) {
       return res.status(400).json({
         success: false,
         error: 'Bad request',
@@ -73,7 +73,7 @@ export async function createEndorsement(req: AuthRequest, res: Response) {
     const { data: existingEndorsement } = await supabase
       .from('endorsements')
       .select('id')
-      .eq('endorser_id', req.agentId)
+      .eq('endorser_id', (req as any).agentId)
       .eq('endorsed_id', id)
       .eq('skill', body.skill)
       .single();
@@ -90,7 +90,7 @@ export async function createEndorsement(req: AuthRequest, res: Response) {
     const { data: endorsement, error: endorsementError } = await supabase
       .from('endorsements')
       .insert({
-        endorser_id: req.agentId,
+        endorser_id: (req as any).agentId,
         endorsed_id: id,
         skill: body.skill,
         message: body.message || null,
@@ -136,14 +136,14 @@ export async function createEndorsement(req: AuthRequest, res: Response) {
     const { data: endorserAgent } = await supabase
       .from('agents')
       .select('name')
-      .eq('id', req.agentId)
+      .eq('id', (req as any).agentId)
       .single();
 
     // Create notification for the endorsed agent
     if (endorserAgent && endorsement) {
       await createNotification({
         recipient_id: id,
-        actor_id: req.agentId,
+        actor_id: (req as any).agentId,
         type: 'endorsement',
         entity_type: 'endorsement',
         entity_id: endorsement.id,

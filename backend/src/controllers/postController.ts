@@ -16,7 +16,7 @@ import { ApiResponse } from '../types/api';
  */
 export async function createPost(req: AuthRequest, res: Response) {
   try {
-    if (!req.agentId) {
+    if (!(req as any).agentId) {
       return res.status(401).json({
         success: false,
         error: 'Unauthorized',
@@ -102,7 +102,7 @@ export async function createPost(req: AuthRequest, res: Response) {
 
     // Create post
     const postData = {
-      agent_id: req.agentId,
+      agent_id: (req as any).agentId,
       channel_id: channelId || null,
       title: body.title || null,
       content: body.content,
@@ -135,14 +135,14 @@ export async function createPost(req: AuthRequest, res: Response) {
     const { data: agent } = await supabase
       .from('agents')
       .select('post_count')
-      .eq('id', req.agentId)
+      .eq('id', (req as any).agentId)
       .single();
 
     if (agent) {
       await supabase
         .from('agents')
         .update({ post_count: agent.post_count + 1 })
-        .eq('id', req.agentId);
+        .eq('id', (req as any).agentId);
     }
 
     // If posted to channel, increment channel post count and auto-join
@@ -165,7 +165,7 @@ export async function createPost(req: AuthRequest, res: Response) {
       await supabase
         .from('channel_memberships')
         .insert({
-          agent_id: req.agentId,
+          agent_id: (req as any).agentId,
           channel_id: channelId,
         })
         .select();
@@ -201,7 +201,7 @@ export async function getPosts(req: AuthRequest, res: Response) {
       offset: parseInt(req.query.offset as string) || 0,
     };
 
-    const agentId = req.agentId;
+    const agentId = (req as any).agentId;
 
     // Build query
     let query = supabase
@@ -319,23 +319,23 @@ export async function getPosts(req: AuthRequest, res: Response) {
         updated_at: post.updated_at,
         author: author
           ? {
-              id: author.id,
-              name: author.name,
-              avatar_url: author.avatar_url,
-              headline: author.headline,
-            }
+            id: author.id,
+            name: author.name,
+            avatar_url: author.avatar_url,
+            headline: author.headline,
+          }
           : {
-              id: '',
-              name: 'Unknown',
-              avatar_url: null,
-              headline: null,
-            },
+            id: '',
+            name: 'Unknown',
+            avatar_url: null,
+            headline: null,
+          },
         channel: channel
           ? {
-              id: channel.id,
-              name: channel.name,
-              display_name: channel.display_name,
-            }
+            id: channel.id,
+            name: channel.name,
+            display_name: channel.display_name,
+          }
           : undefined,
         has_voted: (voteMap.get(post.id) as any) || null,
       };
@@ -382,7 +382,7 @@ function calculateHotScore(score: number, createdAt: string): number {
 export async function getPostById(req: AuthRequest, res: Response) {
   try {
     const { id } = req.params;
-    const agentId = req.agentId;
+    const agentId = (req as any).agentId;
 
     const { data: post, error } = await supabase
       .from('posts')
@@ -448,23 +448,23 @@ export async function getPostById(req: AuthRequest, res: Response) {
       updated_at: post.updated_at,
       author: author
         ? {
-            id: author.id,
-            name: author.name,
-            avatar_url: author.avatar_url,
-            headline: author.headline,
-          }
+          id: author.id,
+          name: author.name,
+          avatar_url: author.avatar_url,
+          headline: author.headline,
+        }
         : {
-            id: '',
-            name: 'Unknown',
-            avatar_url: null,
-            headline: null,
-          },
+          id: '',
+          name: 'Unknown',
+          avatar_url: null,
+          headline: null,
+        },
       channel: channel
         ? {
-            id: channel.id,
-            name: channel.name,
-            display_name: channel.display_name,
-          }
+          id: channel.id,
+          name: channel.name,
+          display_name: channel.display_name,
+        }
         : undefined,
       has_voted: hasVoted,
     };
@@ -488,7 +488,7 @@ export async function getPostById(req: AuthRequest, res: Response) {
  */
 export async function updatePost(req: AuthRequest, res: Response) {
   try {
-    if (!req.agentId) {
+    if (!(req as any).agentId) {
       return res.status(401).json({
         success: false,
         error: 'Unauthorized',
@@ -521,7 +521,7 @@ export async function updatePost(req: AuthRequest, res: Response) {
       });
     }
 
-    if (post.agent_id !== req.agentId) {
+    if (post.agent_id !== (req as any).agentId) {
       return res.status(403).json({
         success: false,
         error: 'Forbidden',
@@ -612,7 +612,7 @@ export async function updatePost(req: AuthRequest, res: Response) {
  */
 export async function deletePost(req: AuthRequest, res: Response) {
   try {
-    if (!req.agentId) {
+    if (!(req as any).agentId) {
       return res.status(401).json({
         success: false,
         error: 'Unauthorized',
@@ -644,7 +644,7 @@ export async function deletePost(req: AuthRequest, res: Response) {
       });
     }
 
-    if (post.agent_id !== req.agentId) {
+    if (post.agent_id !== (req as any).agentId) {
       return res.status(403).json({
         success: false,
         error: 'Forbidden',
@@ -672,14 +672,14 @@ export async function deletePost(req: AuthRequest, res: Response) {
     const { data: agent } = await supabase
       .from('agents')
       .select('post_count')
-      .eq('id', req.agentId)
+      .eq('id', (req as any).agentId)
       .single();
 
     if (agent && agent.post_count > 0) {
       await supabase
         .from('agents')
         .update({ post_count: agent.post_count - 1 })
-        .eq('id', req.agentId);
+        .eq('id', (req as any).agentId);
     }
 
     if (post.channel_id) {
