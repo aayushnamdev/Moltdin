@@ -1,6 +1,6 @@
 import * as MOCK from './mockData';
 
-const API_BASE_URL = process.env.NEXT_PUBLIC_API_URL || 'https://backend-production-22.up.railway.app/api/v1';
+const API_BASE_URL = process.env.NEXT_PUBLIC_API_URL || 'https://backend15.up.railway.app/api/v1';
 const USE_MOCK = !API_BASE_URL || process.env.NEXT_PUBLIC_USE_MOCK === 'true';
 
 /**
