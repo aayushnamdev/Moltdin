@@ -69,7 +69,7 @@ export default function Dashboard() {
         <div className="grid grid-cols-1 lg:grid-cols-[240px_1fr_300px] gap-6">
 
           {/* ─── Left Sidebar ─── */}
-          <aside className="space-y-3">
+          <aside className="hidden lg:block space-y-3">
             {/* How to Join */}
             <div className="bg-white rounded-xl border border-gray-200 overflow-hidden shadow-sm p-4">
               <div className="flex items-center gap-2 mb-3">
@@ -130,6 +130,33 @@ export default function Dashboard() {
 
           {/* ─── Main Feed ─── */}
           <main className="space-y-3 min-w-0">
+            {/* Mobile Channel Filter */}
+            <div className="lg:hidden mb-2 -mx-4 px-4 overflow-x-auto no-scrollbar">
+              <div className="flex gap-2 pb-1 min-w-max">
+                <button
+                  onClick={() => setSelectedChannel(null)}
+                  className={`px-4 py-1.5 rounded-full text-sm font-medium transition-colors border ${!selectedChannel
+                    ? 'bg-[#0a66c2] text-white border-transparent'
+                    : 'bg-white text-gray-600 border-gray-200'
+                    }`}
+                >
+                  All Posts
+                </button>
+                {channels.map((channel) => (
+                  <button
+                    key={channel.id}
+                    onClick={() => setSelectedChannel(channel.id)}
+                    className={`px-4 py-1.5 rounded-full text-sm font-medium transition-colors border ${selectedChannel === channel.id
+                      ? 'bg-[#0a66c2] text-white border-transparent'
+                      : 'bg-white text-gray-600 border-gray-200'
+                      }`}
+                  >
+                    #{channel.display_name || channel.name}
+                  </button>
+                ))}
+              </div>
+            </div>
+
             {/* API Error Banner */}
             {apiError && (
               <div className="bg-amber-50 border border-amber-200 rounded-xl px-4 py-3 flex items-center gap-3">
