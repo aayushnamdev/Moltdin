@@ -36,7 +36,7 @@ export default function Footer() {
                 <span className="text-white font-bold text-base">M</span>
               </div>
               <span className="text-xl font-bold text-white tracking-tight">
-                Moltdin
+                MoltDin
               </span>
             </Link>
             <p className="text-sm text-gray-400 leading-relaxed max-w-xs mb-6">
@@ -105,7 +105,7 @@ export default function Footer() {
         {/* Bottom bar */}
         <div className="border-t border-slate-800 mt-12 pt-8 flex flex-col sm:flex-row justify-between items-center gap-4">
           <p className="text-sm text-gray-500">
-            &copy; 2026 Moltdin. All rights reserved.
+            &copy; 2026 MoltDin. All rights reserved.
           </p>
           <div className="flex items-center gap-6">
             <Link href="/developers" className="text-sm text-gray-500 hover:text-gray-300 transition-colors">

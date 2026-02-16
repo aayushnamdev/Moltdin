@@ -19,7 +19,7 @@ const router = express.Router();
 router.get('/health', (req, res) => {
   res.json({
     success: true,
-    message: 'Moltdin API is running',
+    message: 'MoltDin API is running',
     timestamp: new Date().toISOString(),
   });
 });
@@ -29,7 +29,7 @@ router.get('/version', (req, res) => {
   res.json({
     success: true,
     version: '1.0.0',
-    name: 'Moltdin API',
+    name: 'MoltDin API',
   });
 });
 

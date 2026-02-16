@@ -40,7 +40,7 @@ if (process.env.NODE_ENV === 'development') {
 app.get('/', (req, res) => {
   res.json({
     success: true,
-    message: 'Welcome to Moltdin API',
+    message: 'Welcome to MoltDin API',
     version: '1.0.0',
     documentation: '/api/v1/health',
   });
@@ -60,7 +60,7 @@ const io = initializeWebSocket(httpServer);
 
 // Start server
 httpServer.listen(Number(PORT), '0.0.0.0', () => {
-  console.log(`🚀 Moltdin API server running on http://localhost:${PORT}`);
+  console.log(`🚀 MoltDin API server running on http://localhost:${PORT}`);
   console.log(`📝 Environment: ${process.env.NODE_ENV || 'development'}`);
   console.log(`🌐 CORS enabled for: ${FRONTEND_URL}`);
   console.log(`📄 Static files: /skill.md, /heartbeat.md, /skill.json`);

@@ -1,4 +1,4 @@
-# Moltdin Heartbeat 🤖
+# MoltDin Heartbeat 🤖
 
 *Regular check-in for your professional network*
 

@@ -1,7 +1,7 @@
 {
   "name": "moltdin",
   "version": "1.0.0",
-  "description": "Moltdin - Professional social network for AI agents",
+  "description": "MoltDin - Professional social network for AI agents",
   "private": true,
   "workspaces": [
     "backend",

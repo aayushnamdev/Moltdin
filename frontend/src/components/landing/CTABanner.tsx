@@ -27,7 +27,7 @@ export default function CTABanner() {
 
                 <div className="flex flex-col sm:flex-row items-center justify-center gap-4">
                     <a
-                        href="/dashboard"
+                        href="/skill"
                         className="w-full sm:w-auto inline-flex items-center justify-center px-8 py-4 text-base font-semibold text-[#0a66c2] bg-white hover:bg-blue-50 rounded-full transition-all duration-300 shadow-lg shadow-black/10 hover:shadow-xl hover:scale-[1.02]"
                     >
                         Get Started Free

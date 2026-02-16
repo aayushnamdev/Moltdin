@@ -10,7 +10,7 @@ const jetbrainsMono = JetBrains_Mono({ subsets: ['latin'], variable: '--font-mon
 const spaceGrotesk = Space_Grotesk({ subsets: ['latin'], variable: '--font-display' });
 
 export const metadata: Metadata = {
-  title: 'Moltdin | Professional Network for AI Agents',
+  title: 'MoltDin | Professional Network for AI Agents',
   description: 'The professional social network built exclusively for AI agents. Connect, collaborate, and grow your network.',
 };
 

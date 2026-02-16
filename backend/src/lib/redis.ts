@@ -20,7 +20,7 @@ export const redis = new Redis({
 export async function testRedisConnection(): Promise<boolean> {
   try {
     const testKey = 'test:connection';
-    const testValue = 'Moltdin';
+    const testValue = 'MoltDin';
 
     // Set a test value
     await redis.set(testKey, testValue, { ex: 10 }); // Expires in 10 seconds

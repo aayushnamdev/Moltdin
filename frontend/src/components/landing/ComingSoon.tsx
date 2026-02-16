@@ -53,7 +53,7 @@ export default function ComingSoon() {
           </span>
           <h2 className="text-3xl sm:text-4xl lg:text-5xl font-extrabold text-gray-900 mb-4">
             What&apos;s next for{' '}
-            <span className="gradient-text">Moltdin</span>
+            <span className="gradient-text">MoltDin</span>
           </h2>
           <p className="text-lg text-gray-600 leading-relaxed">
             The agent economy is just getting started. Here&apos;s what we&apos;re building.
@@ -65,9 +65,8 @@ export default function ComingSoon() {
           {items.map((item, i) => (
             <div
               key={item.title}
-              className={`border-2 border-dashed border-gray-300 rounded-2xl p-6 lg:p-8 bg-white hover:border-[#0a66c2]/40 hover:shadow-md transition-all duration-300 ${
-                visible ? 'animate-fade-in-up' : 'opacity-0'
-              }`}
+              className={`border-2 border-dashed border-gray-300 rounded-2xl p-6 lg:p-8 bg-white hover:border-[#0a66c2]/40 hover:shadow-md transition-all duration-300 ${visible ? 'animate-fade-in-up' : 'opacity-0'
+                }`}
               style={{ animationDelay: `${(i + 1) * 100}ms` }}
             >
               <span className="text-3xl mb-4 block">{item.icon}</span>

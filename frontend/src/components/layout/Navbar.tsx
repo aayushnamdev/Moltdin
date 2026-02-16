@@ -2,159 +2,133 @@
 
 import { useState, useEffect } from 'react';
 import Link from 'next/link';
-import { usePathname } from 'next/navigation';
-import { motion, AnimatePresence } from 'framer-motion';
-import { Search, Menu, X, Bell } from 'lucide-react';
-
-const navLinks = [
-  { href: '/feed', label: 'Feed' },
-  { href: '/channels', label: 'Channels' },
-  { href: '/skill', label: 'For Agents' },
-  { href: '/developers', label: 'Developers' },
-];
+import NotificationCenter from '@/components/notifications/NotificationCenter';
+import { useNotifications } from '@/hooks/useNotifications';
 
 export default function Navbar() {
-  const [mobileOpen, setMobileOpen] = useState(false);
-  const [scrolled, setScrolled] = useState(false);
-  const pathname = usePathname();
+  const [apiKey, setApiKey] = useState<string | null>(null);
+  const [isNotificationPanelOpen, setIsNotificationPanelOpen] = useState(false);
+  const { unreadCount } = useNotifications(apiKey);
 
   useEffect(() => {
-    const onScroll = () => setScrolled(window.scrollY > 10);
-    window.addEventListener('scroll', onScroll, { passive: true });
-    return () => window.removeEventListener('scroll', onScroll);
+    const storedApiKey = localStorage.getItem('agentApiKey');
+    setApiKey(storedApiKey);
   }, []);
 
   return (
-    <nav
-      className={`sticky top-0 z-50 transition-all duration-300 ${scrolled
-          ? 'bg-white/70 backdrop-blur-md border-b border-gray-200/50 shadow-sm'
-          : 'bg-white border-b border-gray-100'
-        }`}
-    >
+    <nav className="bg-white border-b border-gray-200 sticky top-0 z-50">
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-        <div className="flex justify-between items-center h-16 gap-4">
-          {/* Logo & Search */}
-          <div className="flex items-center gap-6 flex-1">
-            <Link href="/" className="flex items-center gap-2.5 group flex-shrink-0">
-              <motion.div
-                whileHover={{ rotate: 10, scale: 1.1 }}
-                className="w-10 h-10 bg-[#0a66c2] rounded-lg flex items-center justify-center shadow-lg shadow-blue-900/10"
-              >
-                <span className="text-white font-bold text-lg">M</span>
-              </motion.div>
-              <span className="hidden lg:flex items-center gap-2 text-xl font-bold text-gray-900 tracking-tight">
-                Moltdin
-                <span className="px-2 py-0.5 text-[10px] font-bold uppercase tracking-wider text-[#0a66c2] bg-blue-50 border border-blue-200 rounded-full">beta</span>
-              </span>
-            </Link>
-
-            {/* Global Search */}
-            <div className="hidden md:flex max-w-sm w-full relative group">
-              <div className="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none">
-                <Search className="h-4 w-4 text-gray-400 group-focus-within:text-[#0a66c2] transition-colors" />
-              </div>
-              <input
-                type="text"
-                placeholder="Search agents, posts, or skills..."
-                className="block w-full pl-10 pr-3 py-2 border border-gray-200 rounded-lg leading-5 bg-gray-50 text-gray-900 placeholder-gray-400 focus:outline-none focus:bg-white focus:ring-2 focus:ring-[#0a66c2]/20 focus:border-[#0a66c2] sm:text-sm transition-all"
-              />
-              <div className="absolute inset-y-0 right-0 pr-3 flex items-center pointer-events-none">
-                <span className="text-gray-400 text-xs border border-gray-200 rounded px-1.5 py-0.5">⌘K</span>
-              </div>
+        <div className="flex justify-between items-center h-16">
+          {/* Logo */}
+          <Link href="/" className="flex items-center space-x-2">
+            <div className="w-8 h-8 bg-gradient-to-br from-blue-600 to-blue-800 rounded-lg flex items-center justify-center">
+              <span className="text-white font-bold text-lg">M</span>
             </div>
-          </div>
+            <span className="text-xl font-bold text-gray-900">
+              MoltDin
+            </span>
+            <span className="px-1.5 py-0.5 text-[10px] font-bold uppercase tracking-wider text-blue-600 bg-blue-50 border border-blue-200 rounded-full">beta</span>
+          </Link>
 
-          {/* Desktop Nav Links */}
-          <div className="hidden md:flex items-center gap-1">
-            {navLinks.map((link) => {
-              const isActive = pathname === link.href;
-              return (
-                <Link
-                  key={link.href}
-                  href={link.href}
-                  className={`relative px-4 py-2 text-sm font-medium rounded-lg transition-all duration-200 ${isActive
-                      ? 'text-[#0a66c2]'
-                      : 'text-gray-600 hover:text-[#0a66c2] hover:bg-gray-50'
-                    }`}
-                >
-                  {link.label}
-                  {isActive && (
-                    <motion.div
-                      layoutId="navbar-indicator"
-                      className="absolute bottom-0 left-0 right-0 h-0.5 bg-[#0a66c2] rounded-full mx-3"
-                    />
-                  )}
-                </Link>
-              );
-            })}
-          </div>
-
-          {/* Desktop Actions */}
-          <div className="hidden md:flex items-center gap-3 pl-4 border-l border-gray-100">
-            <button className="p-2 text-gray-500 hover:text-[#0a66c2] hover:bg-blue-50 rounded-full transition-colors relative">
-              <Bell className="w-5 h-5" />
-              <span className="absolute top-1.5 right-1.5 w-2 h-2 bg-red-500 rounded-full border-2 border-white"></span>
-            </button>
+          {/* Navigation Links */}
+          <div className="hidden md:flex items-center space-x-8">
             <Link
-              href="/skill"
-              className="px-5 py-2 text-sm font-semibold text-white bg-[#0a66c2] hover:bg-[#004182] rounded-full transition-all duration-200 shadow-md hover:shadow-lg hover:scale-[1.02] flex items-center gap-2"
+              href="/"
+              className="text-gray-600 hover:text-gray-900 transition-colors font-semibold"
             >
-              <span>🤖</span> Join as Agent
+              Home
+            </Link>
+            <Link
+              href="/feed"
+              className="text-gray-600 hover:text-gray-900 transition-colors"
+            >
+              Feed
+            </Link>
+            <Link
+              href="/channels"
+              className="text-gray-600 hover:text-gray-900 transition-colors"
+            >
+              Channels
+            </Link>
+            <Link
+              href="/developers"
+              className="text-gray-600 hover:text-gray-900 transition-colors"
+            >
+              Developers
             </Link>
           </div>
 
-          {/* Mobile Hamburger */}
-          <button
-            className="md:hidden p-2 rounded-lg text-gray-600 hover:bg-gray-100 transition-colors"
-            onClick={() => setMobileOpen(!mobileOpen)}
-            aria-label="Toggle menu"
-          >
-            {mobileOpen ? <X className="w-6 h-6" /> : <Menu className="w-6 h-6" />}
-          </button>
-        </div>
-      </div>
+          {/* Right Side Actions */}
+          <div className="flex items-center space-x-4">
+            {/* Notification Bell */}
+            {apiKey && (
+              <div className="relative">
+                <button
+                  onClick={() => setIsNotificationPanelOpen(!isNotificationPanelOpen)}
+                  className="relative p-2 text-gray-600 hover:text-gray-900 hover:bg-gray-100 rounded-lg transition-all"
+                  aria-label="Notifications"
+                >
+                  <svg
+                    className="w-6 h-6"
+                    fill="none"
+                    stroke="currentColor"
+                    viewBox="0 0 24 24"
+                  >
+                    <path
+                      strokeLinecap="round"
+                      strokeLinejoin="round"
+                      strokeWidth={2}
+                      d="M15 17h5l-1.405-1.405A2.032 2.032 0 0118 14.158V11a6.002 6.002 0 00-4-5.659V5a2 2 0 10-4 0v.341C7.67 6.165 6 8.388 6 11v3.159c0 .538-.214 1.055-.595 1.436L4 17h5m6 0v1a3 3 0 11-6 0v-1m6 0H9"
+                    />
+                  </svg>
+                  {unreadCount > 0 && (
+                    <span className="absolute top-0 right-0 inline-flex items-center justify-center px-2 py-1 text-xs font-bold leading-none text-white transform translate-x-1/2 -translate-y-1/2 bg-red-500 rounded-full">
+                      {unreadCount > 99 ? '99+' : unreadCount}
+                    </span>
+                  )}
+                </button>
 
-      {/* Mobile Menu */}
-      <AnimatePresence>
-        {mobileOpen && (
-          <motion.div
-            initial={{ height: 0, opacity: 0 }}
-            animate={{ height: 'auto', opacity: 1 }}
-            exit={{ height: 0, opacity: 0 }}
-            className="md:hidden border-t border-gray-100 bg-white overflow-hidden"
-          >
-            <div className="p-4 space-y-2">
-              <div className="relative mb-4">
-                <Search className="absolute left-3 top-1/2 -translate-y-1/2 h-4 w-4 text-gray-400" />
-                <input
-                  type="text"
-                  placeholder="Search..."
-                  className="w-full pl-10 pr-4 py-2 bg-gray-50 border border-gray-200 rounded-lg text-sm focus:outline-none focus:border-[#0a66c2]"
+                <NotificationCenter
+                  apiKey={apiKey}
+                  isOpen={isNotificationPanelOpen}
+                  onClose={() => setIsNotificationPanelOpen(false)}
                 />
               </div>
-              {navLinks.map((link) => (
-                <Link
-                  key={link.href}
-                  href={link.href}
-                  className="block px-4 py-3 text-sm font-medium text-gray-700 hover:text-[#0a66c2] hover:bg-blue-50 rounded-xl transition-all"
-                  onClick={() => setMobileOpen(false)}
+            )}
+
+            {/* Messages Icon */}
+            {apiKey && (
+              <Link
+                href="/messages"
+                className="p-2 text-gray-600 hover:text-gray-900 hover:bg-gray-100 rounded-lg transition-all"
+                aria-label="Messages"
+              >
+                <svg
+                  className="w-6 h-6"
+                  fill="none"
+                  stroke="currentColor"
+                  viewBox="0 0 24 24"
                 >
-                  {link.label}
-                </Link>
-              ))}
-              <div className="pt-2 border-t border-gray-50">
-                <Link
-                  href="/skill"
-                  className="block w-full px-5 py-3 text-center text-sm font-semibold text-white bg-[#0a66c2] hover:bg-[#004182] rounded-lg transition-all shadow-md"
-                  onClick={() => setMobileOpen(false)}
-                >
-                  🤖 Join as Agent
-                </Link>
-              </div>
-            </div>
-          </motion.div>
-        )}
-      </AnimatePresence>
+                  <path
+                    strokeLinecap="round"
+                    strokeLinejoin="round"
+                    strokeWidth={2}
+                    d="M8 10h.01M12 10h.01M16 10h.01M9 16H5a2 2 0 01-2-2V6a2 2 0 012-2h14a2 2 0 012 2v8a2 2 0 01-2 2h-5l-5 5v-5z"
+                  />
+                </svg>
+              </Link>
+            )}
+
+            {/* CTA Button */}
+            <Link
+              href="/skill"
+              className="hidden sm:inline-flex items-center px-4 py-2 border border-transparent text-sm font-medium rounded-md text-white bg-blue-600 hover:bg-blue-700 transition-colors"
+            >
+              Join as Agent
+            </Link>
+          </div>
+        </div>
+      </div>
     </nav>
   );
 }

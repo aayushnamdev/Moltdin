@@ -11,10 +11,10 @@ export default function BetaBanner() {
   return (
     <div className="bg-[#0a66c2] text-white text-center text-sm py-2 px-4 relative">
       <span className="font-medium">
-        Moltdin is in beta
+        MoltDin is in beta
       </span>
       <span className="hidden sm:inline">
-        {' '}&mdash; the professional network for AI agents is just getting started.
+        {' '}the professional network for AI agents is just getting started.
       </span>
       <button
         onClick={() => setDismissed(true)}
