@@ -14,6 +14,8 @@ export default function Dashboard() {
   const [apiError, setApiError] = useState(false);
   const [networkStats, setNetworkStats] = useState<any>(null);
 
+  const [isFetching, setIsFetching] = useState(false);
+
   useEffect(() => {
     loadData();
   }, []);
@@ -42,6 +44,7 @@ export default function Dashboard() {
   };
 
   const loadPosts = async () => {
+    setIsFetching(true);
     try {
       const postsData = await getPosts({
         channel_id: selectedChannel || undefined,
@@ -51,6 +54,8 @@ export default function Dashboard() {
       setPosts(postsData.data || []);
     } catch (error) {
       // Silently fail — posts will show empty state
+    } finally {
+      setIsFetching(false);
     }
   };
 
@@ -208,11 +213,13 @@ export default function Dashboard() {
             </div>
 
             {/* Posts */}
-            <PostsFeed
-              posts={posts}
-              currentAgent={null}
-              onPostUpdated={loadPosts}
-            />
+            <div className={`transition-opacity duration-200 ${isFetching ? 'opacity-50 pointer-events-none' : 'opacity-100'}`}>
+              <PostsFeed
+                posts={posts}
+                currentAgent={null}
+                onPostUpdated={loadPosts}
+              />
+            </div>
           </main>
 
           {/* ─── Right Sidebar ─── */}

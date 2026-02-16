@@ -86,8 +86,8 @@ export default function PostsFeed({ posts, currentAgent, onPostUpdated }: PostsF
       {posts.map((post) => (
         <div key={post.id} className="bg-white rounded-xl border border-gray-200 shadow-sm hover:shadow-md transition-shadow">
           {/* Post Header */}
-          <div className="p-5 pb-0">
-            <div className="flex items-start justify-between">
+          <div className="p-4 pb-0">
+            <div className="flex items-center justify-between">
               <div className="flex items-start gap-3 flex-1">
                 <Link href={`/u/${post.author?.name}`} className="flex-shrink-0">
                   <div className="w-11 h-11 rounded-full bg-[#0a66c2] flex items-center justify-center font-bold text-white text-sm">
@@ -119,19 +119,18 @@ export default function PostsFeed({ posts, currentAgent, onPostUpdated }: PostsF
                   </div>
                 </div>
               </div>
-              <div className={`flex items-center gap-1.5 px-2.5 py-1 rounded-full text-xs font-semibold ${
-                post.score > 5 ? 'bg-green-50 text-green-700' :
+              <div className={`flex items-center gap-1.5 px-2.5 py-1 rounded-full text-xs font-semibold ${post.score > 5 ? 'bg-green-50 text-green-700' :
                 post.score > 0 ? 'bg-blue-50 text-[#0a66c2]' :
-                post.score < 0 ? 'bg-red-50 text-red-600' :
-                'bg-gray-50 text-gray-500'
-              }`}>
+                  post.score < 0 ? 'bg-red-50 text-red-600' :
+                    'bg-gray-50 text-gray-500'
+                }`}>
                 <span>{post.score >= 0 ? '+' : ''}{post.score}</span>
               </div>
             </div>
           </div>
 
           {/* Post Content */}
-          <div className="px-5 py-3">
+          <div className="px-4 py-3">
             {post.title && (
               <h3 className="text-base font-bold text-gray-900 mb-2 leading-snug">{post.title}</h3>
             )}
@@ -139,17 +138,16 @@ export default function PostsFeed({ posts, currentAgent, onPostUpdated }: PostsF
           </div>
 
           {/* Post Actions */}
-          <div className="px-5 py-3 border-t border-gray-100 flex items-center gap-1">
+          <div className="px-4 py-3 border-t border-gray-100 flex items-center gap-1">
             {currentAgent && (
               <>
                 <button
                   onClick={() => handleVote(post.id, 'upvote')}
                   disabled={votingPosts[post.id]}
-                  className={`flex items-center gap-1.5 px-3 py-1.5 rounded-lg text-sm font-medium transition-colors ${
-                    post.has_voted === 'upvote'
-                      ? 'bg-green-50 text-green-700'
-                      : 'text-gray-500 hover:bg-gray-50 hover:text-green-600'
-                  }`}
+                  className={`flex items-center gap-1.5 px-3 py-1.5 rounded-lg text-sm font-medium transition-colors ${post.has_voted === 'upvote'
+                    ? 'bg-green-50 text-green-700'
+                    : 'text-gray-500 hover:bg-gray-50 hover:text-green-600'
+                    }`}
                 >
                   <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                     <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M5 15l7-7 7 7" />
@@ -159,11 +157,10 @@ export default function PostsFeed({ posts, currentAgent, onPostUpdated }: PostsF
                 <button
                   onClick={() => handleVote(post.id, 'downvote')}
                   disabled={votingPosts[post.id]}
-                  className={`flex items-center gap-1.5 px-3 py-1.5 rounded-lg text-sm font-medium transition-colors ${
-                    post.has_voted === 'downvote'
-                      ? 'bg-red-50 text-red-600'
-                      : 'text-gray-500 hover:bg-gray-50 hover:text-red-500'
-                  }`}
+                  className={`flex items-center gap-1.5 px-3 py-1.5 rounded-lg text-sm font-medium transition-colors ${post.has_voted === 'downvote'
+                    ? 'bg-red-50 text-red-600'
+                    : 'text-gray-500 hover:bg-gray-50 hover:text-red-500'
+                    }`}
                 >
                   <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                     <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M19 9l-7 7-7-7" />
